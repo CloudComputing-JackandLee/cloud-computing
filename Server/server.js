@@ -1,10 +1,11 @@
 const io = require('socket.io')(3001, {
     cors: {
-        origin:['http://localhost:80'],
-        //origin:['http://localhost:3000'],
+        //origin:['http://localhost'],
+        origin:['http://react-app:80' ,'http://react-app' ,'http://localhost:3000','http://localhost:80','http://localhost', 'http://localhost:3001'],
 
     },
 })
+
 
 let userAnzahl = 0;
 
@@ -19,12 +20,6 @@ io.on("connection", socket => {
         //socket.broadcast.emit("receiveToken", row, col);
     })
 
-
-
-
-
-
-
     socket.on("joinRoom", (room)=> {
             socket.join(room);
             userAnzahl = io.sockets.adapter.rooms.get(room).size;
@@ -33,8 +28,35 @@ io.on("connection", socket => {
             // if room.size > 2 --> emit(staylockedlock) else --> join room inform user  
             
     })
-    
-
-
 })
 
+
+/*
+
+const httpServer = require('http').createServer();
+const io = require('socket.io')(httpServer);
+const cors = require('cors');
+
+// Enable CORS for the HTTP server
+const corsOptions = {
+    origin: ['http://localhost'],
+    methods: ['GET', 'POST'],
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+io.on("connection", socket => {
+    console.log(socket.id);
+
+    socket.on("sendToken", (room, row, col) => {
+        console.log("triggered");
+        socket.to(room).emit("receiveToken", row, col);
+    });
+});
+
+httpServer.listen(3001, () => {
+    console.log('Socket.IO server listening on *:3001');
+});
+
+*/
