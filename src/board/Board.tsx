@@ -38,8 +38,8 @@ class Board extends React.Component<prop,states>{
             color: '#ee5454'
         };
 
-        //this.socket = io('http://localhost:3001');
-        this.socket = io('http://socket-server:3001');
+        this.socket = io('http://localhost:3001');
+        //this.socket = io('http://socket-server:3001');
 
 
         this.socket.on('connect',()=> console.log("connected with id: " + this.socket.id));
