@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/terraform_deploy_aws_doesnt_work/terraform.tfvars
+/terraform_push_docker_hub/terraform.tfvars
+/terraform_push_docker_hub_doesnt_work/terraform.tfvars
