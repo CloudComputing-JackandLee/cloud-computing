@@ -7,7 +7,12 @@ module "ecs_cluster" {
   cluster_name = var.cluster_name
 }
 
+data "aws_iam_instance_profile" "vocareum_lab_instance_profile" {
+  name = "LabInstanceProfile"
+}
+
 # Use the react_app module to create resources for the React app.
+/*
 module "react_app" {
   source = "./modules/react_app"
 
@@ -16,6 +21,7 @@ module "react_app" {
   task_cpu            = var.task_cpu
   task_memory         = var.task_memory
 }
+*/
 
 
 
@@ -24,6 +30,7 @@ module "react_app" {
 
 
 
+/*
 
 
 terraform {
@@ -220,4 +227,4 @@ output "BOTTLETUBE_S3_BUCKET_ID" {
 
 output "BOTTLETUBE_CLOUDFRONT_DOMAIN_NAME" {
   value = aws_cloudfront_distribution.bottletube.domain_name
-}
+}*/

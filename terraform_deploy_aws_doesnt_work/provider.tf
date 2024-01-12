@@ -13,6 +13,9 @@ terraform {
 # Define the AWS provider block to specify the AWS region.
 provider "aws" {
   region = "us-east-1"
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
+  token = var.aws_token
   # Authentication requires the following environment variables:
-  #     AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
+  #     AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SECRET_ACCESS_KEY
 }
