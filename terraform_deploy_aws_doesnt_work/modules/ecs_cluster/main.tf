@@ -1,11 +1,31 @@
 # modules/ecs_cluster/main.tf
 
+
+
+
+
+data "aws_iam_role" "AWSServiceRoleForECS" {
+  name = "AWSServiceRoleForECS"
+}
+data "aws_iam_role" "LabRole" {
+  name = "LabRole"
+}
+
+data "aws_iam_instance_profile" "vocareum_lab_instance_profile" {
+  name = "LabInstanceProfile"
+}
+
+
+data "aws_iam_policy" "AWSServicePolicyForECS" {
+  arn = "arn:aws:iam::aws:policy/aws-service-role/AmazonECSServiceRolePolicy"
+}
+
 # Define resources for creating an ECS cluster.
 
 resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/24"
   tags = {
-    Name = "connect4"
+    Name = "connect4-change"
   }
 }
 
@@ -41,7 +61,7 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "connect4-public"
+    Name = "connect4-public2"
   }
 
 }
@@ -93,13 +113,7 @@ resource "aws_security_group" "alb" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  ingress {
-    protocol         = "tcp"
-    from_port        = 80
-    to_port          = 3001
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+
 
   ingress {
     protocol         = "tcp"
@@ -129,13 +143,7 @@ resource "aws_security_group" "ecs_tasks" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-  ingress {
-    protocol         = "tcp"
-    from_port        = 80
-    to_port          = 3001
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+
   ingress {
     protocol         = "tcp"
     from_port        = 3001
@@ -154,7 +162,7 @@ resource "aws_security_group" "ecs_tasks" {
 }
 
 
-resource "aws_ecr_repository" "cloud-computing-block" {
+/*resource "aws_ecr_repository" "cloud-computing-block" {
   name = "cloud-computing-repo"
   image_tag_mutability = "MUTABLE"
 
@@ -166,23 +174,27 @@ resource "aws_ecr_repository" "cloud-computing-block" {
     env = "dev"
     name = "cloud computing repo"
   }
-}
+}*/
 
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.cluster_name
+
 }
 
-resource "aws_ecs_task_definition" "main" {
+resource "aws_ecs_task_definition" "ecs_task_definition" {
   family = "service"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
-/*  execution_role_arn       = LabInstanceProfile
-  task_role_arn            = LabInstanceProfile*/
+  execution_role_arn = data.aws_iam_role.LabRole.arn
+  task_role_arn = data.aws_iam_role.LabRole.arn
+
+
+
   container_definitions = jsonencode([{
     name        = "connect4"
-    image       = "jackainsworth/connect4:v1.1"
+    image       = "jackainsworth/connect4:v1.2"
     essential   = true
     portMappings = [{
       protocol      = "http"
@@ -191,66 +203,31 @@ resource "aws_ecs_task_definition" "main" {
     }]
   }, {
     name        = "socket"
-    image       = "jackainsworth/cloud-computing-socket-server:v1.1"
+    image       = "jackainsworth/cloud-computing-socket-server:v1.2"
     essential   = true
     portMappings = [{
       protocol      = "tcp"
       containerPort = 3001
       hostPort      = 3001
     }]
+  }])
+}
+resource "aws_ecs_service" "service" {
+  name            = "connect4_service"
+  cluster = aws_ecs_cluster.ecs_cluster.id
+  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
+  desired_count = 1
+  launch_type = "FARGATE"
+/*
+  security_groups = [aws_security_group.ecs_tasks.arn]
+*/
+
+
+  network_configuration {
+    subnets = [aws_subnet.public.id]
+    assign_public_ip = true
+    security_groups = [aws_security_group.ecs_tasks.id]
 
   }
-
-  ])
 }
 
-data "aws_iam_instance_profile" "vocareum_lab_instance_profile" {
-  name = "LabInstanceProfile"
-}
-
-/*
-resource "aws_iam_role" "ecs_task_role" {
-  name = "app-ecsTaskRole"
-
-  assume_role_policy = <<EOF
-{
- "Version": "2012-10-17",
- "Statement": [
-   {
-     "Action": "sts:AssumeRole",
-     "Principal": {
-       "Service": "ecs-tasks.amazonaws.com"
-     },
-     "Effect": "Allow",
-     "Sid": ""
-   }
- ]
-}
-EOF
-}
-
-resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "app-ecsTaskExecutionRole"
-
-  assume_role_policy = <<EOF
-{
- "Version": "2012-10-17",
- "Statement": [
-   {
-     "Action": "sts:AssumeRole",
-     "Principal": {
-       "Service": "ecs-tasks.amazonaws.com"
-     },
-     "Effect": "Allow",
-     "Sid": ""
-   }
- ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-*/

@@ -7,12 +7,8 @@ module "ecs_cluster" {
   cluster_name = var.cluster_name
 }
 
-data "aws_iam_instance_profile" "vocareum_lab_instance_profile" {
-  name = "LabInstanceProfile"
-}
 
-# Use the react_app module to create resources for the React app.
-/*
+/*# Use the reat_app module to create resources for the React app.
 module "react_app" {
   source = "./modules/react_app"
 
@@ -20,8 +16,7 @@ module "react_app" {
   ecr_repository_name = var.ecr_repository_name
   task_cpu            = var.task_cpu
   task_memory         = var.task_memory
-}
-*/
+}*/
 
 
 
