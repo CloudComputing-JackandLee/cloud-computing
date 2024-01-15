@@ -4,9 +4,7 @@
 
 
 
-data "aws_iam_role" "AWSServiceRoleForECS" {
-  name = "AWSServiceRoleForECS"
-}
+
 data "aws_iam_role" "LabRole" {
   name = "LabRole"
 }
@@ -15,15 +13,10 @@ data "aws_iam_instance_profile" "vocareum_lab_instance_profile" {
   name = "LabInstanceProfile"
 }
 
-
-data "aws_iam_policy" "AWSServicePolicyForECS" {
-  arn = "arn:aws:iam::aws:policy/aws-service-role/AmazonECSServiceRolePolicy"
-}
-
 # Define resources for creating an ECS cluster.
 
 resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/24"
+  cidr_block           = "10.0.0.0/16"
   tags = {
     Name = "connect4-change"
   }
@@ -40,7 +33,7 @@ resource "aws_internet_gateway" "main" {
 resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
   cidr_block = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = "us-east-1b"
 
   tags = {
     Name = "connect4-private-1"
@@ -57,6 +50,9 @@ resource "aws_subnet" "public" {
     Name = "connect4-public-1"
   }
 }
+
+
+
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
@@ -161,6 +157,32 @@ resource "aws_security_group" "ecs_tasks" {
   }
 }
 
+resource "aws_security_group" "web_sg" {
+  name        = "web_sg"
+  description = "Security group for web instances"
+
+  ingress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    protocol         = "tcp"
+    from_port        = 3001
+    to_port          = 3001
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    protocol         = "-1"
+    from_port        = 0
+    to_port          = 0
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
 
 /*resource "aws_ecr_repository" "cloud-computing-block" {
   name = "cloud-computing-repo"
@@ -180,6 +202,37 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.cluster_name
 
 }
+
+
+resource "aws_lb" "ecs_lb" {
+  name               = "ecs-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.web_sg, aws_security_group.alb ,aws_security_group.web_sg.id]
+  subnets            = [aws_subnet.public.id, aws_subnet.private.id]
+}
+
+resource "aws_lb_listener" "ecs_lb_listener" {
+  load_balancer_arn = aws_lb.ecs_lb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_lb_target_group.ecs_target_group.arn
+    type             = "forward"
+  }
+}
+
+resource "aws_lb_target_group" "ecs_target_group" {
+  name     = "ecs-target-group"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+
+  target_type = "ip"
+}
+
+
 
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family = "service"
@@ -221,7 +274,11 @@ resource "aws_ecs_service" "service" {
 /*
   security_groups = [aws_security_group.ecs_tasks.arn]
 */
-
+  load_balancer {
+    target_group_arn = aws_lb_target_group.ecs_target_group.arn
+    container_name   = "connect4"
+    container_port   = 80
+  }
 
   network_configuration {
     subnets = [aws_subnet.public.id]
