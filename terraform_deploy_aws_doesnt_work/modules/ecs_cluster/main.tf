@@ -158,6 +158,8 @@ resource "aws_security_group" "ecs_tasks" {
 }
 
 resource "aws_security_group" "web_sg" {
+  vpc_id = aws_vpc.main.id
+
   name        = "web_sg"
   description = "Security group for web instances"
 
@@ -208,7 +210,7 @@ resource "aws_lb" "ecs_lb" {
   name               = "ecs-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.web_sg, aws_security_group.alb ,aws_security_group.web_sg.id]
+  security_groups    = [aws_security_group.web_sg.id]
   subnets            = [aws_subnet.public.id, aws_subnet.private.id]
 }
 
