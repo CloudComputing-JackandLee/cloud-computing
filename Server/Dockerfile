@@ -1,6 +1,6 @@
 # build step
 FROM node:16.13.2-alpine as start_socket
-WORKDIR /server
+WORKDIR /socket
 COPY package.json ./
 
 RUN npm install
