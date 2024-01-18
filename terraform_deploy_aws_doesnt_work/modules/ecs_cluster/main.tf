@@ -39,7 +39,16 @@ resource "aws_subnet" "private" {
     Name = "connect4-private-1"
   }
 }
+resource "aws_subnet" "public2" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block = "10.0.2.0/24"
+  availability_zone = "us-east-1b"
+  map_public_ip_on_launch = true
 
+  tags = {
+    Name = "connect4-public-1"
+  }
+}
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block = "10.0.0.0/24"
@@ -203,6 +212,7 @@ resource "aws_security_group" "web_sg" {
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.cluster_name
 
+
 }
 
 
@@ -210,8 +220,12 @@ resource "aws_lb" "ecs_lb" {
   name               = "ecs-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.web_sg.id]
-  subnets            = [aws_subnet.public.id, aws_subnet.private.id]
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = [aws_subnet.public.id, aws_subnet.public2.id]
+/*
+  enable_deletion_protection = false
+*/
+
 }
 
 resource "aws_lb_listener" "ecs_lb_listener" {
@@ -220,7 +234,7 @@ resource "aws_lb_listener" "ecs_lb_listener" {
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_lb_target_group.ecs_target_group.arn
+    target_group_arn = aws_lb.ecs_lb.arn
     type             = "forward"
   }
 }
@@ -245,11 +259,9 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   execution_role_arn = data.aws_iam_role.LabRole.arn
   task_role_arn = data.aws_iam_role.LabRole.arn
 
-
-
   container_definitions = jsonencode([{
     name        = "connect4"
-    image       = "jackainsworth/connect4:v1.2"
+    image       = "jackainsworth/connect4:v1.0"
     essential   = true
     portMappings = [{
       protocol      = "http"
@@ -258,13 +270,14 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     }]
   }, {
     name        = "socket"
-    image       = "jackainsworth/cloud-computing-socket-server:v1.2"
+    image       = "jackainsworth/cloud-computing-socket-server:v1.0"
     essential   = true
     portMappings = [{
       protocol      = "tcp"
       containerPort = 3001
       hostPort      = 3001
     }]
+
   }])
 }
 resource "aws_ecs_service" "service" {
@@ -273,18 +286,22 @@ resource "aws_ecs_service" "service" {
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   desired_count = 1
   launch_type = "FARGATE"
-/*
-  security_groups = [aws_security_group.ecs_tasks.arn]
-*/
+
+
   load_balancer {
+/*
+    target_group_arn = aws_lb_target_group.ecs_target_group.id
+*/
+
     target_group_arn = aws_lb_target_group.ecs_target_group.arn
     container_name   = "connect4"
+
     container_port   = 80
   }
-
+  depends_on = [aws_lb_listener.ecs_lb_listener]
   network_configuration {
     subnets = [aws_subnet.public.id]
-    assign_public_ip = true
+    assign_public_ip = false
     security_groups = [aws_security_group.ecs_tasks.id]
 
   }
