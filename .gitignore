@@ -27,3 +27,5 @@ yarn-error.log*
 /terraform_push_docker_hub_doesnt_work/terraform.tfvars
 /terraform_deploy_aws_doesnt_work/terraform.tfstate
 /deploy_infrastructure/terraform.tfvars
+
+terraform.tfvars

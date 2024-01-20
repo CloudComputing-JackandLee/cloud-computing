@@ -42,7 +42,8 @@ class Board extends React.Component<prop,states>{
         const albHostname = process.env.REACT_APP_ALB_HOSTNAME;
         const socketPort = process.env.REACT_APP_SOCKET_PORT;
 
-        const socketUrl = `${albHostname}:${socketPort}`;
+        const socketUrl = `https://${albHostname}:${socketPort}`;
+        console.log(socketUrl)
 
 // Now you can use socketUrl in your application code
         this.socket = io(socketUrl);

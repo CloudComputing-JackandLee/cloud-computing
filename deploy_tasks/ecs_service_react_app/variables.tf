@@ -27,18 +27,9 @@ variable "security_group_id" {
   description = "ID of the security group for ECS tasks"
 }
 
-variable "socket_container_image" {
-  description = "Image for the socket container"
-}
-
 variable "connect4_container_image" {
   description = "Image for the connect4 container"
 }
-
-variable "socket_container_port" {
-  description = "Port for the socket container"
-}
-
 variable "connect4_container_port" {
   description = "Port for the connect4 container"
 }

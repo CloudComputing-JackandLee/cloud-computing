@@ -1,4 +1,3 @@
-/*
 variable "aws_access_key" {
   description = "AWS access key"
   type        = string
@@ -11,7 +10,6 @@ variable "aws_token"  {
   description = "AWS token"
   type        = string
 }
-*/
 
 variable "socket_container_image" {
   description = "Image for the socket container"

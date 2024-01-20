@@ -1,11 +1,5 @@
 
-resource "aws_ecs_cluster" "ecs_cluster" {
-  name = var.cluster_name
-  setting {
-    name  = "containerInsights"
-    value = "enabled"
-  }
-}
+
 
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                    = var.task_family
@@ -27,22 +21,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         containerPort = var.socket_container_port
         hostPort      = var.socket_container_port
       }]
-    },
-    {
-      name        = "connect4"
-      image       = var.connect4_container_image
-      essential   = true
-      portMappings = [{
-        protocol      = "http"
-        containerPort = var.connect4_container_port
-        hostPort      = var.connect4_container_port
-      }]
     }
   ])
 }
 
-resource "aws_ecs_service" "ecs_service" {
-  name            = "connect4_service"
+resource "aws_ecs_service" "ecs_service_socket" {
+  name            = "socket_service"
   cluster         = var.cluster_name
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   desired_count   = 1
@@ -50,8 +34,8 @@ resource "aws_ecs_service" "ecs_service" {
 
   load_balancer {
     target_group_arn = var.lb_target_group_arn
-    container_name   = "connect4"
-    container_port   = var.connect4_container_port
+    container_name   = "socket"
+    container_port   = var.socket_container_port
   }
 
   network_configuration {
