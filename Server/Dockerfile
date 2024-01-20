@@ -2,6 +2,7 @@
 FROM node:16.13.2-alpine as start_socket
 WORKDIR /socket
 COPY package.json ./
+COPY package-lock.json ./
 
 RUN npm install
 COPY . ./
