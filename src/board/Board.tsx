@@ -38,8 +38,24 @@ class Board extends React.Component<prop,states>{
             color: '#ee5454'
         };
 
-        //this.socket = io('http://172.17.0.1:3001');
-        this.socket = io('http://localhost:3001');
+
+        const albHostname = process.env.REACT_APP_ALB_HOSTNAME;
+        const socketPort = process.env.REACT_APP_SOCKET_PORT;
+
+        const socketUrl = `${albHostname}:${socketPort}`;
+
+// Now you can use socketUrl in your application code
+        this.socket = io(socketUrl);
+
+   /*     const serverAddress = window.location.origin;
+
+        console.log(window.location.origin, "   ", window.location.hostname)
+        this.socket = io(`http://${serverAddress}:3001`).connect();
+*/
+/*
+        this.socket = io('http://172.17.0.1:3001');
+*/
+        //this.socket = io('http://localhost:3001');
         //this.socket = io('http://socket-server:3001');
 
 

@@ -1,3 +1,0 @@
-registry_url = "<your_registry>"
-socket_server_image_name = "socket-server-image"
-react_app_image_name     = "react-app-image"
