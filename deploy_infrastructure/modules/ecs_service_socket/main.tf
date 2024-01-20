@@ -31,9 +31,7 @@ resource "aws_ecs_service" "ecs_service_socket" {
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-/*
   force_new_deployment = true
-*/
 
   load_balancer {
     target_group_arn = var.lb_target_group_arn
