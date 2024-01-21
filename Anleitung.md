@@ -1,8 +1,12 @@
-Infrastructure Deployment and Cloud Build Process
+
+
+# die Anleitung ist besser im pdf dokument und wurde schlecht hir hin rüber geported
+
+# Infrastructure Deployment and Cloud Build Process
+
 1. Configure Terraform Variables (terraform.tfvars)
    hcl
-   Copy code
-# terraform.tfvars
+ terraform.tfvars
 
 aws_access_key         = "ASIAXAN…GCWZWWX"
 aws_secret_key         = "Z5f7Q160q…lc6waySfG"
