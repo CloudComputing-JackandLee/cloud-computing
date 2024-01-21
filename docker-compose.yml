@@ -15,5 +15,3 @@ services:
     image: ${REACT_IMAGE}
     ports:
       - "3001:3001"
-
-
