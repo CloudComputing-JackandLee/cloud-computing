@@ -47,6 +47,8 @@ module "ecs_service" {
   connect4_container_image  = var.connect4_container_image
   connect4_container_port   = var.connect4_container_port
 
+
+
 }
 module "ecs_service_socket" {
   source                 = "./modules/ecs_service_socket"

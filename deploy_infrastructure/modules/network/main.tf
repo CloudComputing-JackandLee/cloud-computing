@@ -79,3 +79,14 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
+
+resource "aws_ecr_repository" "ecr_repo" {
+  name                 = "connect4_repository"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+data "aws_ecr_authorization_token" "token" {}
