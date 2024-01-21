@@ -14,12 +14,12 @@ jobs:
 
     services:
       react-app:
-        image: cc_react-app
+        image: react-app
         ports:
           - "80:80"
         options: --name react-app
       socket-server:
-        image: cc_socket-server
+        image: socket-server
         ports:
           - "3001:3001"
         options: --name socket-server
