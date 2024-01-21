@@ -12,10 +12,21 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      react-app:
+        image: docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY_REACT_APP }}:latest
+        ports:
+          - "80:80"
+        options: --name react-app
+      socket-server:
+        image: docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY_SOCKET_SERVER }}:latest
+        ports:
+          - "3001:3001"
+        options: --name socket-server
+
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x ,21.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [16.x,21.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -32,9 +43,8 @@ jobs:
         echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin docker.io
         docker build . --file Dockerfile --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY_REACT_APP }}:latest
         docker push docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY_REACT_APP }}:latest
-    - name: Build the Docker image and Push (Socker Server)
+    - name: Build the Docker image and Push (Socket Server)
       run: |
         echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin docker.io
         docker build . --file ./Server/Dockerfile --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY_SOCKET_SERVER }}:latest
         docker push docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY_SOCKET_SERVER }}:latest
-  
