@@ -30,3 +30,8 @@ variable "connect4_container_port" {
   description = "Port for the connect4 container"
   default     = 80
 }
+
+variable "deploy_ecs_services" {
+  description = "Set to true to deploy ECS services, false to exclude them."
+  type        = bool
+}

@@ -47,8 +47,7 @@ module "ecs_service" {
   connect4_container_image  = var.connect4_container_image
   connect4_container_port   = var.connect4_container_port
 
-
-
+  count                  = var.deploy_ecs_services ? 1 : 0
 }
 module "ecs_service_socket" {
   source                 = "./modules/ecs_service_socket"
@@ -61,4 +60,6 @@ module "ecs_service_socket" {
   security_group_id      = module.security.ecs_tasks_security_group_id
   socket_container_image    = var.socket_container_image
   socket_container_port     = var.socket_container_port
+
+  count                  = var.deploy_ecs_services ? 1 : 0
 }
