@@ -1,0 +1,18 @@
+# terraform.tfvars
+
+# AWS credentials and region
+aws_access_key     = "ASIA...NIK"
+aws_secret_key     = "Z74YaZ0d...vXgqdBH"
+aws_token          = "FwoGZXIv...YXdz0fWmB0Jt"
+
+socket_container_port      = 3001
+connect4_container_port    = 80
+
+socket_container_image     = "ducthuanle/cc_socket-server:latest"
+connect4_container_image   = "ducthuanle/cc_react-app:latest"
+
+deploy_ecs_services = false
+
+
+
+
