@@ -11,6 +11,7 @@ aws_token              = "FwoG…cS0FY="
 socket_container_port  = 3001
 connect4_container_port= 80
 
+
 socket_container_image = "ducthuanle/cc_socket-server:latest"
 connect4_container_image= "ducthuanle/cc_react-app:latest"
 
