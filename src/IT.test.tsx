@@ -11,4 +11,5 @@ test("renders App component in integration test", () => {
     expect(screen.getByText('This is an online multiplayer Connect4 game!')).toBeInTheDocument();
     expect(5+6).toBe(11);
     expect("test").toBe("test");
+
 });
