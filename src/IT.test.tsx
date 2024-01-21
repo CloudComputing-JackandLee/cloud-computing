@@ -5,6 +5,7 @@ import App from './App';
 import Board from "./board/Board";
 import React from "react";
 //import Board from './board/Board';
+
 test("renders App component in integration test", () => {
     render(<App/>);
     expect(screen.getByText('This is an online multiplayer Connect4 game!')).toBeInTheDocument();
