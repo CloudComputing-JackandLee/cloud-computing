@@ -12,6 +12,7 @@ type User= {
 }
 type states= {
     showBoard:boolean,
+    connected:boolean,
     showButton:boolean,
     showForm:boolean,
     room:string,
@@ -31,6 +32,7 @@ class Board extends React.Component<prop,states>{
     constructor(props:prop) {
         super(props);
         this.state ={
+            connected:false,
             showBoard:false,
             showButton:true,
             showForm:true,
@@ -60,7 +62,11 @@ class Board extends React.Component<prop,states>{
         //this.socket = io('http://socket-server:3001');
 
 
-        this.socket.on('connect',()=> console.log("connected with id: " + this.socket.id));
+        this.socket.on('connect',()=> {
+
+            console.log("connected with id: " + this.socket.id)
+            this.setState({connected:true });
+        });
 
 
         this.user = {id:this.socket.id, start:1};
@@ -168,10 +174,12 @@ class Board extends React.Component<prop,states>{
                 {this.state.showButton &&
                     (<button
                         onClick={() =>{
-                            this.joinRoom();
-                            this.setState({showBoard:true });
-                            this.setState({showButton:false});
-                            this.setState({showForm:false});
+                            if (this.state.connected) {
+                                this.joinRoom();
+                                this.setState({showBoard: true});
+                                this.setState({showButton: false});
+                                this.setState({showForm: false});
+                            }
                         }}>
                         join the game
                     </button>)}
