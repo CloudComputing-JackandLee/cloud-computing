@@ -3,7 +3,7 @@ services:
   react-app:
     build:
       context: ./
-    image: docker.io/ducthuanle/cc_react-app:latest
+    image: ${SOCKET_IMAGE}
     ports:
       - "80:80"
     depends_on:
@@ -12,7 +12,7 @@ services:
   socket-server:
     build:
       context: ./Server
-    image: docker.io/ducthuanle/cc_socket-server:latest
+    image: ${REACT_IMAGE}
     ports:
       - "3001:3001"
 
