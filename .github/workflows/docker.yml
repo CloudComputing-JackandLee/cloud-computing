@@ -1,4 +1,4 @@
-name: Docker Image CI + DockerHub push
+name: CD Docker Image + DockerHub push
 
 on:
   push:
