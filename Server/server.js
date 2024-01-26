@@ -33,33 +33,3 @@ io.on("connection", socket => {
     })
 })
 
-
-/*
-
-const httpServer = require('http').createServer();
-const io = require('socket.io')(httpServer);
-const cors = require('cors');
-
-// Enable CORS for the HTTP server
-const corsOptions = {
-    origin: ['http://localhost'],
-    methods: ['GET', 'POST'],
-    credentials: true,
-};
-
-app.use(cors(corsOptions));
-
-io.on("connection", socket => {
-    console.log(socket.id);
-
-    socket.on("sendToken", (room, row, col) => {
-        console.log("triggered");
-        socket.to(room).emit("receiveToken", row, col);
-    });
-});
-
-httpServer.listen(3001, () => {
-    console.log('Socket.IO server listening on *:3001');
-});
-
-*/
