@@ -4,6 +4,7 @@ resource "aws_lb" "ecs_lb" {
   load_balancer_type = "application"
   security_groups    = [var.web_sg_id]
   subnets            = var.subnets
+
 }
 
 resource "aws_lb_listener" "ecs_lb_listener" {
